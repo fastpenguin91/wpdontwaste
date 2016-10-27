@@ -1,0 +1,1 @@
+WordPress Plugin that allows you to create "activities" that you either like doing or want to start doing. Sort these activities into categories and whenever you're bored or have free time, use the plugin to figure out what you want to do with your free time
