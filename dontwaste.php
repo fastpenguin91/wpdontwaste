@@ -5,8 +5,11 @@ Plugin Name: dont waste your life
 
 add_action( 'init', 'jsc_register_activities' );
 add_action( 'init', 'jsc_register_activities_taxonomy' );
-add_action( 'admin_init', 'jsc_add_menus' );
+add_action( 'admin_menu', 'jsc_add_menus' );
+add_action( 'admin_post_nopriv_contact_form', 'prefix_send_email_to_admin' );
+add_action( 'admin_post_contact_form', 'prefix_send_email_to_admin' );
 
+global $wpdb;
 
 // hook into the init action and call create_book_taxonomies when it fires
 add_action( 'init', 'create_book_taxonomies', 0 );
@@ -39,6 +42,73 @@ function create_book_taxonomies() {
 
     register_taxonomy( 'genre', array( 'jsc_activity' ), $args );
     
+}
+
+function prefix_send_email_to_admin() {
+
+    global $wpdb;
+    /**
+     * At this point, $_GET/$_POST variable are available
+     *
+     * We can do our normal processing here
+     */
+
+    echo "sent the GET form from INSIDE THE PLUGIN. From the admin area.<br>";
+
+    $activitiesSelection = '';
+    $activitiesCount = 0;
+    $numItems = count($_GET['activities']);
+
+
+    foreach( $_GET['activities'] as $value) {
+        $activitiesSelection .= $value;
+        $activitiesCount += 1;
+
+        if ($activitiesCount !== $numItems) {
+            $activitiesSelection .= ', ';
+        }
+
+
+    }
+
+    /*die(var_dump($_GET['activities']));*/
+
+    echo "activities selection: " . $activitiesSelection . "<br><br><br>";
+
+
+    $querystr = "SELECT wp_posts.post_title, wp_posts.ID, wp_terms.name FROM wp_posts
+                LEFT JOIN wp_term_relationships ON wp_term_relationships.object_id = wp_posts.ID
+                LEFT JOIN wp_terms ON wp_term_relationships.term_taxonomy_id = wp_terms.term_id
+                WHERE post_type = 'jsc_activity' AND wp_term_relationships.term_taxonomy_id IN (" . $activitiesSelection . ")
+                GROUP BY wp_posts.ID
+                HAVING COUNT(*) =" . $activitiesCount;
+
+
+
+
+                /*"SELECT wp_posts.post_title, wp_posts.ID, wp_terms.name FROM wp_posts
+                LEFT JOIN wp_term_relationships ON wp_term_relationships.object_id = wp_posts.ID
+                LEFT JOIN wp_terms ON wp_term_relationships.term_taxonomy_id = wp_terms.term_id
+                WHERE post_type = 'jsc_activity' AND wp_term_relationships.term_taxonomy_id IN ('4', '3', '2')
+                GROUP BY wp_posts.ID
+                HAVING COUNT(*) = 3";*/
+
+                
+
+
+    /*$querystr = "
+    SELECT *
+    FROM $wpdb->posts
+    WHERE post_type = 'jsc_activity'";*/
+
+    /*echo '<br>' . $querystr;*/
+
+
+    $pageposts = $wpdb->get_results($querystr, OBJECT);
+
+    var_dump($pageposts);
+
+
 }
 
 
@@ -95,5 +165,52 @@ function jsc_register_activities(){
 }
 
 function jsc_add_menus(){
-    add_menu_page('Dont waste your life', 'dont waste it!', 'manage_options', 'no_waste');
+    add_menu_page(
+        'Dont waste your life',
+        'dont waste it!',
+        'manage_options',
+        'no_waste',
+        'jsc_add_menu_cb'
+        );
+}
+
+function jsc_add_menu_cb(){
+    include( plugin_dir_path(__FILE__) . 'searchActivities.php' );
+}
+
+
+
+function myCustomSearchQuery(){
+    $querystr = "
+    SELECT post_title
+    FROM $wpdb->posts
+    WHERE post_type = 'jsc_activity'";
+
+    /*$querystr = "
+        SELECT $wpdb->posts.* 
+        FROM $wpdb->posts";/*, $wpdb->postmeta
+        WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id 
+        AND $wpdb->postmeta.meta_key = 'tag' 
+        AND $wpdb->postmeta.meta_value = 'email' 
+        AND $wpdb->posts.post_status = 'publish' 
+        AND $wpdb->posts.post_type = 'post'
+        AND $wpdb->posts.post_date < NOW()
+        ORDER BY $wpdb->posts.post_date DESC
+     ";*/
+
+     /*Original SQL Statement. $querystr = "
+        SELECT $wpdb->posts.* 
+        FROM $wpdb->posts, $wpdb->postmeta
+        WHERE $wpdb->posts.ID = $wpdb->postmeta.post_id 
+        AND $wpdb->postmeta.meta_key = 'tag' 
+        AND $wpdb->postmeta.meta_value = 'email' 
+        AND $wpdb->posts.post_status = 'publish' 
+        AND $wpdb->posts.post_type = 'post'
+        AND $wpdb->posts.post_date < NOW()
+        ORDER BY $wpdb->posts.post_date DESC
+     "; */
+
+     $pageposts = $wpdb->get_results($querystr, OBJECT);
+
+    die(var_dump($pageposts) );
 }
