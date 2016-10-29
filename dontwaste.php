@@ -47,18 +47,18 @@ function create_book_taxonomies() {
 function prefix_send_email_to_admin() {
 
     global $wpdb;
+
+    get_header();
+
     /**
      * At this point, $_GET/$_POST variable are available
      *
      * We can do our normal processing here
      */
 
-    echo "sent the GET form from INSIDE THE PLUGIN. From the admin area.<br>";
-
     $activitiesSelection = '';
     $activitiesCount = 0;
     $numItems = count($_GET['activities']);
-
 
     foreach( $_GET['activities'] as $value) {
         $activitiesSelection .= $value;
@@ -68,13 +68,7 @@ function prefix_send_email_to_admin() {
             $activitiesSelection .= ', ';
         }
 
-
     }
-
-    /*die(var_dump($_GET['activities']));*/
-
-    echo "activities selection: " . $activitiesSelection . "<br><br><br>";
-
 
     $querystr = "SELECT wp_posts.post_title, wp_posts.ID, wp_terms.name FROM wp_posts
                 LEFT JOIN wp_term_relationships ON wp_term_relationships.object_id = wp_posts.ID
@@ -84,29 +78,41 @@ function prefix_send_email_to_admin() {
                 HAVING COUNT(*) =" . $activitiesCount;
 
 
-
-
-                /*"SELECT wp_posts.post_title, wp_posts.ID, wp_terms.name FROM wp_posts
-                LEFT JOIN wp_term_relationships ON wp_term_relationships.object_id = wp_posts.ID
-                LEFT JOIN wp_terms ON wp_term_relationships.term_taxonomy_id = wp_terms.term_id
-                WHERE post_type = 'jsc_activity' AND wp_term_relationships.term_taxonomy_id IN ('4', '3', '2')
-                GROUP BY wp_posts.ID
-                HAVING COUNT(*) = 3";*/
-
-                
-
-
     /*$querystr = "
     SELECT *
     FROM $wpdb->posts
     WHERE post_type = 'jsc_activity'";*/
 
-    /*echo '<br>' . $querystr;*/
-
-
     $pageposts = $wpdb->get_results($querystr, OBJECT);
 
-    var_dump($pageposts);
+    $postIDArray = array();
+
+    foreach ($pageposts as $obj) {
+        $arr = get_object_vars($obj);
+
+        array_push($postIDArray, $arr['ID']);
+    }
+
+    /*$myFirstPost = get_post( 71 );
+
+    var_dump($myFirstPost);*/
+
+    /*var_dump($postIDArray);*/
+
+    $args = array(
+        'include' => $postIDArray,
+        'post_type'   => 'jsc_activity'
+    );
+
+    $listOfPosts = get_posts( $args );
+
+    foreach($listOfPosts as $post ) {
+        echo "<h2>" . $post->post_title . '</h2>';
+        echo $post->post_content;
+        echo "<br>";
+    }
+
+    get_footer();
 
 
 }
