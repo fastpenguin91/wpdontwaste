@@ -34,4 +34,35 @@ echo $htmlForm;
 ?>
 
 <input type="submit" value="get random activity!">
-</form>
+</form> <br>
+<br>
+<br>
+<br>
+<br>
+
+<h3>OR Search</h3>
+<p>Check any category that you want to include. This search is an "EITHER OR" search. If you want something that's either Indoor OR outdoor, then select all categories you want to include.</p>
+
+
+
+<form action="<?php echo esc_url( admin_url('admin-post.php') ); ?>" method="get">
+    <input type="hidden" name="action" value="random_or">
+<?php
+
+$htmlForm2 = '';
+
+foreach( $terms as $theTerm ) {
+
+    $vars = get_object_vars($theTerm);
+
+
+    $htmlForm2 .= '<label><input type="checkbox" name="activities[]" id="'. $vars['term_id'] . '" value="'. $vars['term_id'] . '"> ' . $vars['name'] . '</label>'; 
+
+}
+
+echo $htmlForm2;
+
+?>
+
+<input type="submit" value="get random activity!">
+</form> <br>
