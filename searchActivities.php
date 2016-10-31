@@ -15,7 +15,7 @@ $terms = get_terms('jsc_activity_cat', $args);
 ?>
 
 <form action="<?php echo esc_url( admin_url('admin-post.php') ); ?>" method="get">
-    <input type="hidden" name="action" value="contact_form">
+    <input type="hidden" name="action" value="meet_all_conditions">
 <?php
 
 $htmlForm = '';
@@ -46,7 +46,7 @@ echo $htmlForm;
 
 
 <form action="<?php echo esc_url( admin_url('admin-post.php') ); ?>" method="get">
-    <input type="hidden" name="action" value="random_or">
+    <input type="hidden" name="action" value="meet_any_conditions">
 <?php
 
 $htmlForm2 = '';
