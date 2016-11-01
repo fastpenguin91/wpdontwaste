@@ -5,7 +5,8 @@ namespace Jsc_dont_waste;
 class DataObject {
 
     public $postIDArray = array();
-    public $randomActivityID = '';
+    public $randomPost = '';
+    public $pageposts = '';
 
     public function setup(){
         add_action( 'admin_post_nopriv_meet_all_conditions', array( $this, 'meet_all_conditions' ) );
@@ -16,45 +17,45 @@ class DataObject {
 
     public function meet_all_conditions() {
 
-        $pageposts = $this->all_conditions_search();
+        $this->all_conditions_search();
 
-        $this->postIDArray = array();
-
-        foreach ($pageposts as $obj) {
-            $arr = get_object_vars($obj);
-
-            array_push($this->postIDArray, $arr['ID']);
-        }
-
-        $this->get_random_activity();
-
-        $this->display_content();
+        $this->prepare_results();
 
     }
 
     public function meet_any_conditions(){
         
-        $pageposts = $this->any_condition_search();
-        
+        $this->any_condition_search();
 
+        $this->prepare_results();
+
+    }
+
+    public function prepare_results(){
+        $this->get_activity_post_ids();
+
+        $this->get_random_activity();
+
+        $this->display_content();
+    }
+
+    public function get_activity_post_ids(){
         $this->postIDArray = array();
 
-        foreach ($pageposts as $obj) {
+        foreach ($this->pageposts as $obj) {
             $arr = get_object_vars($obj);
 
             array_push($this->postIDArray, $arr['ID']);
         }
 
-        $this->get_random_activity();
-
-        $this->display_content();
+        die(var_dump($this->postIDArray));
     }
 
     public function all_conditions_search(){
         global $wpdb;
 
         $categorySelection = '';
-        $activitiesCount = 0;
+        $categoryCount = 0;
         $numItems = count($_GET['activities']);
 
         foreach( $_GET['activities'] as $value) {
@@ -66,50 +67,57 @@ class DataObject {
             }
         }
 
-        $querystr = "SELECT wp_posts.post_title, wp_posts.ID, wp_terms.name FROM wp_posts
+        $querystr = "SELECT wp_posts.ID FROM wp_posts
             LEFT JOIN wp_term_relationships ON wp_term_relationships.object_id = wp_posts.ID
             LEFT JOIN wp_terms ON wp_term_relationships.term_taxonomy_id = wp_terms.term_id
             WHERE post_type = 'jsc_activity' AND wp_term_relationships.term_taxonomy_id IN (" . $categorySelection . ")
             GROUP BY wp_posts.ID
             HAVING COUNT(*) =" . $categoryCount;
 
-        return $wpdb->get_results($querystr, OBJECT);
+        $this->pageposts = $wpdb->get_results($querystr, OBJECT);
 
+        die(var_dump($this->pageposts));
+
+    }
+
+    public function generate_query_string($userSelection){
+        $categorySelection = '';
+        $categoryCount = 0;
+        $numItems = count($_GET['activities']);
     }
 
     public function any_condition_search(){
         global $wpdb;
 
-        $chosenCategories = '';
-
-        $activitiesSelection = '';
-        $activitiesCount = 0;
+        $categorySelection = '';
+        $categoryCount = 0;
         $numItems = count($_GET['activities']);
 
         foreach( $_GET['activities'] as $value) {
 
-            if ($activitiesCount == 0) {
-                $activitiesSelection .= ' wp_terms.term_id = ' . $value;
-                $activitiesCount += 1;
-            } else if ($activitiesCount !== $numItems ) {
-                $activitiesSelection .= ' OR wp_terms.term_id = ' . $value;
+            if ($categoryCount == 0) {
+                $categorySelection .= ' wp_terms.term_id = ' . $value;
+                $categoryCount += 1;
+            } else if ($categoryCount !== $numItems ) {
+                $categorySelection .= ' OR wp_terms.term_id = ' . $value;
             }
         }
 
-        $activitiesSelection .= " )";
+        $categorySelection .= " )";
 
-        $sqlQuery = "SELECT DISTINCT wp_posts.post_title, wp_posts.ID FROM wp_posts
+        $sqlQuery = "SELECT DISTINCT wp_posts.ID FROM wp_posts
         LEFT JOIN wp_term_relationships ON wp_term_relationships.object_id = wp_posts.ID
         LEFT JOIN wp_terms ON wp_term_relationships.term_taxonomy_id = wp_terms.term_id
-        WHERE post_type = 'jsc_activity' AND ( " . $activitiesSelection;
+        WHERE post_type = 'jsc_activity' AND ( " . $categorySelection;
 
 
-        return $wpdb->get_results($sqlQuery, OBJECT);
+        $this->pageposts = $wpdb->get_results($sqlQuery, OBJECT);
     }
 
     public function get_random_activity(){
         $arrayElem = array_rand($this->postIDArray);
-        $this->randomActivityID = $this->postIDArray[$arrayElem];
+        $randomActivityID = $this->postIDArray[$arrayElem];
+        $this->randomPost = get_post( $randomActivityID );
     }
 
     public function display_content(){
@@ -117,13 +125,21 @@ class DataObject {
 
         echo "<h1>Here is your Random Activity: </h1>";
         
-        $randomPost = get_post( $this->randomActivityID );
+        echo "<h3>" . $this->randomPost->post_title . "</h3><br>";
 
-        echo "<h3>" . $randomPost->post_title . "</h3><br>";
-
-        echo $randomPost->post_content;
+        echo $this->randomPost->post_content;
 
         echo "<br><br><br><h2>Here are all of the activities that fit your criteria: </h2><br><br><br>";
+
+        echo $this->display_all_posts();
+
+        get_footer();
+    }
+
+    public function display_all_posts(){
+
+        $allPostsStr = '';
+
 
         $args = array(
             'include' => $this->postIDArray,
@@ -133,12 +149,12 @@ class DataObject {
         $listOfPosts = get_posts( $args );
 
         foreach($listOfPosts as $post ) {
-            echo "<h2>" . $post->post_title . '</h2>';
-            echo $post->post_content;
-            echo "<br>";
+            $allPostsStr .= "<h2>" . $post->post_title . '</h2>';
+            $allPostsStr .= $post->post_content;
+            $allPostsStr .= "<br>";
         }
 
-        get_footer();
+        return $allPostsStr;
     }
 
 }
