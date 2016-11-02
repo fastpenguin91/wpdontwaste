@@ -27,7 +27,6 @@ class Content {
 
             array_push($this->postIDArray, $arr['ID']);
         }
-
     }
 
     //sets $randomPost property to a random post that matches the users criteria.
@@ -40,10 +39,8 @@ class Content {
     //displays the results page
     public function display_content(){
         get_header();
-
         echo $this->display_random_post();
         echo $this->display_all_posts();
-
         get_footer();
     }
 
