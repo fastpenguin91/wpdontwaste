@@ -4,6 +4,11 @@ namespace Jsc_dont_waste;
 
 class Init {
 
+    
+    function __construct(){
+        $this->setup();
+    }
+
     /*Registers Post type, taxonomy, and menus */
     public function setup(){
         add_action( 'init', array( $this, 'register_activity_post_type' ) );
