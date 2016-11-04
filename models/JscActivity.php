@@ -2,15 +2,12 @@
 
 namespace Jsc_dont_waste;
 
-/*Only two methods in this class actually deal with processing data from the database.
-The rest manipulates and prepares that data to be displayed in a view, so I think this class needs to be split in two
-but then the two classes will be "tightly coupled" because the view class would rely on this DataObject class?
-*/
-
-class DataObject {
+class JscActivity {
 
     /*********
-    This is the Content Class instantiation.
+    This class is used to gather the posts that match the users criteria. Once this information is gathered,
+    it's sent off to the "Content" Class to be prepared for display. This class requires the Content Class.
+    The Content Class is stored in the $contentObj property.
     *********/
     public $contentObj;
 
@@ -28,6 +25,9 @@ class DataObject {
         add_action( 'admin_post_meet_any_conditions',        array( $this, 'meet_any_conditions' ) );
     }
     
+    //This function is called when the "all conditions" form is submitted
+    //condition_search function is given a parameter to help the method decide which SQL query to run
+    //$this->contentObj is used to prepare the results for display from the Content class. 
     public function meet_all_conditions() {
         $this->condition_search("all");
         $this->contentObj->prepare_results();

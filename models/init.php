@@ -14,8 +14,10 @@ class Init {
         add_action( 'init', array( $this, 'register_activity_post_type' ) );
         add_action( 'init', array( $this, 'register_activities_taxonomy' ) );
         add_action( 'admin_menu', array( $this, 'add_menus' ) );
+        add_action( 'wp_enqueue_scripts', array( $this, 'register_plugin_styles' ) );
+        add_action( 'admin_enqueue_scripts', array( $this, 'register_plugin_styles' ) );
+        //wp_enqueue_style( 'dontwaste_styles', get_stylesheet_uri() . '/styles/dontwaste_styles.css' );
     }
-
 
     //Shouldnt this be able to be private since I'm only calling it from the object itself?
     function register_activity_post_type(){
@@ -78,12 +80,15 @@ class Init {
             );
     }
 
+    function register_plugin_styles(){
+        wp_register_style( 'dontwaste', JSC_PLUGIN_ASSETS_URL . '/dontwaste_styles.css' );
+        wp_enqueue_style( 'dontwaste', false, null, null );
+    }
+
     function jsc_add_menu_cb(){
         include( JSC_DONT_WASTE . '/searchActivities.php' );
     }
 
 }
-
-
 
 ?>

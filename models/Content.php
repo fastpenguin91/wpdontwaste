@@ -48,7 +48,7 @@ class Content {
     public function display_random_post(){
         $randomPostStr = '';
         $randomPostStr .= "<h1>Here is your Random Activity: </h1>";
-        $randomPostStr .= "<h3>" . $this->randomPost->post_title . "</h3><br>";
+        $randomPostStr .= "<a href='" . get_edit_post_link( $this->randomPost->ID). "'><h2>" . $this->randomPost->post_title . "</h2></a><br>";
         $randomPostStr .= $this->randomPost->post_content;
 
         return $randomPostStr;
@@ -66,7 +66,7 @@ class Content {
         $listOfPosts = get_posts( $args );
 
         foreach($listOfPosts as $post ) {
-            $allPostsStr .= "<h2>" . $post->post_title . '</h2>';
+            $allPostsStr .= "<a href='" . get_edit_post_link( $post->ID). "'><h2>" . $post->post_title . "</h2></a><br>";
             $allPostsStr .= $post->post_content;
             $allPostsStr .= "<br>";
         }
