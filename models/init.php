@@ -25,18 +25,18 @@ class Init {
         $taxonomy_args = array('jsc_activity_cat');
 
         $labels = array(
-            'name'         => 'Activities',
-            'edit_item'    => 'Edit Activity',
-            'add_new_item' => 'Add New Activity',
-            'view_item'    => 'View Activity',
+            'name'         => __('Activities', 'jsc-dont-waste'),
+            'edit_item'    => __('Edit Activity', 'jsc-dont-waste'),
+            'add_new_item' => __('Add New Activity', 'jsc-dont-waste'),
+            'view_item'    => __('View Activity', 'jsc-dont-waste'),
             );
 
         $args = array(
             'labels'        => $labels,
-            'name'          => 'activities',
+            'name'          => __('activities', 'jsc-dont-waste'),
             'taxonomies'    => $taxonomy_args,
             'public'        => true,
-            'singular_name' => 'activity',
+            'singular_name' => __('activity', 'jsc-dont-waste'),
             'show_ui'       => true,
             'show_in_menu'  => true
         );
@@ -47,15 +47,15 @@ class Init {
     function register_activities_taxonomy(){
 
         $labels = array(
-            'name'          => 'Activity Categories',
-            'singular_name' => 'Activity Category',
-            'search_items'  => 'Search Categories',
-            'all_items'     => 'All Activity Categories',
-            'edit_item'     => 'Edit Activity Category',
-            'update_item'   => 'Update Activity Category',
-            'add_new_item'  => 'Add New Activity Category',
-            'new_item_name' => 'New Activity Category Name',
-            'menu_name'     => 'Activity Category',
+            'name'          => __('Activity Categories',        'jsc-dont-waste'),
+            'singular_name' => __('Activity Category',          'jsc-dont-waste'),
+            'search_items'  => __('Search Categories',          'jsc-dont-waste'),
+            'all_items'     => __('All Activity Categories',    'jsc-dont-waste'),
+            'edit_item'     => __('Edit Activity Category',     'jsc-dont-waste'),
+            'update_item'   => __('Update Activity Category',   'jsc-dont-waste'),
+            'add_new_item'  => __('Add New Activity Category',  'jsc-dont-waste'),
+            'new_item_name' => __('New Activity Category Name', 'jsc-dont-waste'),
+            'menu_name'     => __('Activity Category',          'jsc-dont-waste'),
             );
 
         $args = array(
@@ -72,8 +72,8 @@ class Init {
 
     function add_menus(){
         add_menu_page(
-            'Dont waste your life',
-            'dont waste it!',
+            __('Dont waste your life', 'jsc-dont-waste'),
+            __('dont waste it!', 'jsc-dont-waste'),
             'manage_options',
             'no_waste',
             array($this, 'jsc_add_menu_cb')

@@ -1,6 +1,7 @@
     <?php
 /*
 Plugin Name: dont waste your life
+Text Domain: jsc-dont-waste
 */
 
 

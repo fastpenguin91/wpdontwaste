@@ -47,7 +47,7 @@ class Content {
     //prepares the random post for display
     public function display_random_post(){
         $randomPostStr = '';
-        $randomPostStr .= "<h1>Here is your Random Activity: </h1>";
+        $randomPostStr .= "<h1>" . esc_html__('Here is your Random Activity:', 'jsc-dont-waste') . " </h1>";
         $randomPostStr .= "<a href='" . get_edit_post_link( $this->randomPost->ID). "'><h2>" . $this->randomPost->post_title . "</h2></a><br>";
         $randomPostStr .= $this->randomPost->post_content;
 
@@ -56,7 +56,7 @@ class Content {
 
     //prepares all posts that fit criteria for display
     public function display_all_posts(){
-        $allPostsStr = '<br><br><br><h2>Here are all of the activities that fit your criteria: </h2><br><br><br>';
+        $allPostsStr = '<br><br><br><h2>' . esc_html__('Here are all of the activities that fit your criteria:', 'jsc-dont-waste') . '</h2><br><br><br>';
 
         $args = array(
             'include' => $this->postIDArray,
