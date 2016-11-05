@@ -47,6 +47,8 @@ class JscActivity {
 
         if ( $searchType == "any" ) {
             foreach( $_GET['activities'] as $value) {
+                $value = intval($value);
+                
                 if ($categoryCount == 0) {
                     $categorySelection .= ' wp_terms.term_id = ' . $value;
                     $categoryCount += 1;
@@ -64,6 +66,7 @@ class JscActivity {
 
         } else if ( $searchType == "all" ) {
             foreach( $_GET['activities'] as $value) {
+                $value = intval($value);
                 $categorySelection .= $value;
                 $categoryCount += 1;
 
